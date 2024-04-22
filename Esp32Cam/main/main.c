@@ -9,6 +9,7 @@
 //${timestamp()}
 //----------------------------------------------------------------Khai bao thu vien ----------------------------------------------------------------
 #include <stdio.h>
+#include <esp_websocket_client.h>
 
 #include <sys/param.h>
 #include "freertos/FreeRTOS.h"
@@ -161,78 +162,46 @@ static void lost_connection(void *arg, esp_event_base_t event_base, int32_t even
         printf("reconnection");
     }
 }
-//---------------------------------------------------------------- POST ----------------------------------------------------------------
-esp_err_t client_event_post_handler(esp_http_client_event_handle_t evt)
+//----ws--------------------------------
+static void websocket_event_handler(void *handler_args, esp_event_base_t base, int32_t event_id, void *event_data)
 {
-    switch (evt->event_id)
+    esp_websocket_event_data_t *data = (esp_websocket_event_data_t *)event_data;
+    switch (event_id)
     {
-    case HTTP_EVENT_ON_DATA:
-        printf("HTTP_EVENT_ON_DATA: %.*s\n", evt->data_len, (char *)evt->data);
+    case WEBSOCKET_EVENT_CONNECTED:
+        ESP_LOGI(TAG, "WEBSOCKET_EVENT_CONNECTED");
         break;
-
-    default:
+    case WEBSOCKET_EVENT_DATA:
+        ESP_LOGW(TAG, "Received=%.*s\n", data->data_len, (char *)data->data_ptr);
         break;
     }
-    return ESP_OK;
 }
-static void send_data_to_webserver()
+
+static void websocket_app_start(void)
 {
-    esp_http_client_config_t config_post = {
-        .url = "http://192.168.1.13:8080/post",
-        .method = HTTP_METHOD_POST,
-        .event_handler = client_event_post_handler};
-    esp_http_client_handle_t client_post = esp_http_client_init(&config_post);
+
+    esp_websocket_client_config_t websocket_cfg = {};
+    websocket_cfg.uri = "ws://192.168.1.13:8080/image";
+    ESP_LOGI(TAG, "Connecting to %s ...", websocket_cfg.uri);
+
+    // Connect to Websocket Server
+    esp_websocket_client_handle_t client = esp_websocket_client_init(&websocket_cfg);
+    esp_websocket_register_events(client, WEBSOCKET_EVENT_ANY, websocket_event_handler, (void *)client);
+
+    esp_websocket_client_start(client);
     while (1)
     {
-
-        camera_fb_t *pic = capture_image_from_camera();
-
-        esp_http_client_set_post_field(client_post, (char *)pic->buf, pic->len);
-        esp_http_client_set_header(client_post, "Content-Type", "image/jpeg");
-        esp_http_client_perform(client_post);
+        if (esp_websocket_client_is_connected(client))
+        {
+            camera_fb_t *pic = esp_camera_fb_get();
+            esp_websocket_client_send(client, (const char *)pic->buf, pic->len, portMAX_DELAY);
+            esp_camera_fb_return(pic);
+        }
     }
-    esp_http_client_cleanup(client_post);
+    esp_websocket_client_stop(client);
+    ESP_LOGI(TAG, "Websocket Stopped");
+    esp_websocket_client_destroy(client);
 }
-//----------------------------------------------------------------GET----------------------------------------------------------------
-
-esp_err_t get_handler(httpd_req_t *req)
-{
-
-    camera_fb_t *fb = (camera_fb_t *)req->user_ctx;
-    // camera_fb_t *fb = capture_image_from_camera();
-    httpd_resp_set_type(req, "image/jpeg");
-    httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
-    httpd_resp_set_hdr(req, "Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS");
-    httpd_resp_set_hdr(req, "Access-Control-Allow-Headers", "Content-Type");
-    httpd_resp_set_hdr(req, "Content-Disposition", "inline; filename=capture.jpg");
-    httpd_resp_send(req, (const char *)fb->buf, fb->len);
-    return ESP_OK;
-}
-httpd_uri_t uri_get = {
-    .uri = "/",
-    .method = HTTP_GET,
-    .handler = get_handler,
-    .user_ctx = NULL};
-httpd_handle_t start_webserver(camera_fb_t *pic)
-{
-    httpd_config_t config = HTTPD_DEFAULT_CONFIG();
-    httpd_handle_t server = NULL;
-    if (httpd_start(&server, &config) == ESP_OK)
-    {
-        uri_get.user_ctx = pic;
-        httpd_register_uri_handler(server, &uri_get);
-    }
-    return server;
-}
-
-void stop_webserver(httpd_handle_t server)
-{
-    if (server)
-    {
-        httpd_stop(server);
-    }
-}
-
 void app_main(void)
 {
 
@@ -255,5 +224,8 @@ void app_main(void)
     connect_wifi();
 
     vTaskDelay(5000 / portTICK_PERIOD_MS);
-    send_data_to_webserver();
+    // camera_fb_t *pic = capture_image_from_camera();
+
+    // send_data_to_webserver();
+    websocket_app_start();
 }
