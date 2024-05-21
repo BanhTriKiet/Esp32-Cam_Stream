@@ -15,6 +15,7 @@
   "dependencies": {
     "@aws-sdk/client-s3": "^3.540.0",
     "@aws-sdk/s3-request-presigner": "^3.540.0",
+    "@ffmpeg-installer/ffmpeg": "^1.1.0",
     "axios": "^1.6.8",
     "body-parser": "^1.20.2",
     "cor": "^0.0.0",
@@ -22,6 +23,9 @@
     "dotenv": "^16.4.5",
     "express": "^4.19.1",
     "express-ws": "^5.0.2",
+    "ffmpeg-static": "^5.2.0",
+    "ffprobe-static": "^3.1.0",
+    "fluent-ffmpeg": "^2.1.2",
     "fs": "^0.0.1-security",
     "http": "^0.0.1-security",
     "https": "^1.0.0",

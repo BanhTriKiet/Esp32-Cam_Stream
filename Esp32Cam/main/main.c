@@ -181,7 +181,11 @@ static void websocket_app_start(void)
 {
 
     esp_websocket_client_config_t websocket_cfg = {};
-    websocket_cfg.uri = "ws://192.168.1.13:8080/image";
+    websocket_cfg.uri = "ws://banhtrikiet.zapto.org:8080/image";
+    //  ws for url
+    // websocket_cfg.uri = "ws://192.168.1.6:8080/image";
+    // ws for aws
+    // websocket_cfg.uri = "ws://54.252.188.221:8080/image";
     ESP_LOGI(TAG, "Connecting to %s ...", websocket_cfg.uri);
 
     // Connect to Websocket Server
@@ -191,12 +195,12 @@ static void websocket_app_start(void)
     esp_websocket_client_start(client);
     while (1)
     {
-        if (esp_websocket_client_is_connected(client))
-        {
-            camera_fb_t *pic = esp_camera_fb_get();
-            esp_websocket_client_send(client, (const char *)pic->buf, pic->len, portMAX_DELAY);
-            esp_camera_fb_return(pic);
-        }
+        // if (esp_websocket_client_is_connected(client))
+        // {
+        camera_fb_t *pic = esp_camera_fb_get();
+        esp_websocket_client_send(client, (const char *)pic->buf, pic->len, portMAX_DELAY);
+        esp_camera_fb_return(pic);
+        // }
     }
     esp_websocket_client_stop(client);
     ESP_LOGI(TAG, "Websocket Stopped");
