@@ -2,14 +2,14 @@ import { Stream } from "stream";
 import express from "express";
 import expressWs from "express-ws";
 import ffmpeg from "fluent-ffmpeg";
-// import ffmpegStatic from 'ffmpeg-static';
+import ffmpegStatic from "ffmpeg-static";
 // import ffprobe  from 'ffprobe-static';
 import ffmpegPath from "@ffmpeg-installer/ffmpeg";
-ffmpeg.setFfmpegPath(ffmpegPath.path);
+ffmpeg.setFfmpegPath(ffmpegStatic);
 //ffmpeg.setFfprobePath(ffprobe.path);
 const app = express();
 expressWs(app);
-console.log(ffmpegPath.path);
+// console.log(ffmpegPath.path);
 let imagesQueue = []; // mảnh lưu trữ các buffer của hình ảnh
 const streamConnections = []; // Mảng lưu trữ các kết nối trong endpoint "/stream"
 let flag = 0;
@@ -19,7 +19,8 @@ function createVideo() {
   ffmpeg({
     source: Stream.Readable.from(imagesQueue, { objectMode: false }),
   })
-    .inputFPS(8)
+    .inputFPS(10)
+    .videoCodec("libx264")
     .output("video.mp4")
     .on("end", () => {
       console.log("Video created successfully!");
@@ -67,7 +68,6 @@ app.ws("/stream", function (ws, req) {
     }
   });
 });
-
 app.listen(8080, () => {
   console.log("Server listening started on port 8080");
 });

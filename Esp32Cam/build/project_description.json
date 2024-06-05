@@ -1,7 +1,7 @@
 {
     "version":            "1",
     "project_name":       "DoAn1",
-    "project_version":    "353cd00-dirty",
+    "project_version":    "5f8208d-dirty",
     "project_path":       "D:/CacMonHoc/Nam3/DoAn1/Esp32Cam",
     "idf_path":           "D:/ESP/container/esp-idf",
     "build_dir":          "D:/CacMonHoc/Nam3/DoAn1/Esp32Cam/build",
