@@ -6,9 +6,8 @@ function Stream() {
   let fpsArray = [];
   const lastRenderTimeRef = useRef(0);
   const [fpsavg, setFpsavg] = useState(0);
-  const logo = require("./received_image.jpg");
   useEffect(() => {
-    const ws = new WebSocket("ws://192.168.1.6:8080/stream");
+    const ws = new WebSocket("ws://192.168.1.227:8080/stream");
 
     ws.onopen = () => {
       console.log("Connected to server");

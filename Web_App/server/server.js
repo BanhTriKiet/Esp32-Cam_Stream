@@ -2,32 +2,81 @@ import { Stream } from "stream";
 import express from "express";
 import expressWs from "express-ws";
 import ffmpeg from "fluent-ffmpeg";
-// import ffmpegStatic from 'ffmpeg-static';
+import ffmpegStatic from "ffmpeg-static";
 // import ffprobe  from 'ffprobe-static';
 import ffmpegPath from "@ffmpeg-installer/ffmpeg";
-ffmpeg.setFfmpegPath(ffmpegPath.path);
+import { resolve } from "path";
+import { rejects } from "assert";
+import { uploadToBucket } from "./s3.js"
+import { addOrUpdateVideoInfos, getAllVideosInfos, getVideosInfosByTime } from "./dynamo.js"
+import dotenv from 'dotenv'
+
+dotenv.config()
+ffmpeg.setFfmpegPath(ffmpegStatic);
 //ffmpeg.setFfprobePath(ffprobe.path);
 const app = express();
 expressWs(app);
-console.log(ffmpegPath.path);
+// console.log(ffmpegPath.path);
 let imagesQueue = []; // mảnh lưu trữ các buffer của hình ảnh
 const streamConnections = []; // Mảng lưu trữ các kết nối trong endpoint "/stream"
 let flag = 0;
 let currentTime, startTime; //Các biến để xác định thời gian lưu ảnh
-// Hàm biến đổi hình ảnh thành image
-function createVideo() {
-  ffmpeg({
-    source: Stream.Readable.from(imagesQueue, { objectMode: false }),
+
+function getRandomInt(min, max) {
+  return Math.floor(Math.random() * (max - min + 1) + min)
+}
+
+function createVideo(prefix, videoName, thumbnailName) {
+  return new Promise((resolve, reject) => {
+    ffmpeg({ source: Stream.Readable.from(imagesQueue, { objectMode: false }) })
+      .inputFPS(15)
+      .outputOptions(['-pix_fmt yuv420p', '-movflags faststart'])
+      .toFormat("mp4")
+      .output("video.mp4")
+      .on("error", (err) => {
+        // console.error("Error creating video:", err);
+        return reject(err)
+      })
+      .on("end", () => {
+        const videoSource = process.env.AWS_CLOUDFRONT_DISTRUBUTION + "/saved_videos/" + prefix + "/" + videoName + ".mp4";
+        const thumbnailSource = process.env.AWS_CLOUDFRONT_DISTRUBUTION + "/saved_thumbnails/" + prefix + "/" + thumbnailName + ".png";
+        const videoInfos = {
+          "videoName": videoName,
+          "thumbnail": thumbnailSource,
+          "videoSource": videoSource,
+          "time": new Date().getTime() / 60000,
+        }
+        addOrUpdateVideoInfos(videoInfos)
+        uploadToBucket("saved_videos", prefix, "video.mp4", videoName + ".mp4")
+        console.log("Video created successfully!");
+        imagesQueue.length = 0
+        return resolve()
+      })
+      .run();
   })
-    .inputFPS(8)
-    .output("video.mp4")
-    .on("end", () => {
-      console.log("Video created successfully!");
+}
+
+function createThumbnail(prefix, thumbnailName) {
+  ffmpeg({ source: "./video.mp4" })
+    .screenshots({
+      timestamps: [0],
+      filename: 'thumbnail.png'
     })
     .on("error", (err) => {
       console.error("Error creating video:", err);
     })
-    .run();
+    .on("end", () => {
+      uploadToBucket("saved_thumbnails", prefix, "thumbnail.png", thumbnailName + ".png")
+      console.log("Thumbnail taken!");
+    })
+}
+
+async function processVideo() {
+  const prefix = getRandomInt(1, 20);
+  const videoName = new Date().toLocaleTimeString('en-US', { hour12: false, hour: "numeric", minute: "numeric" }) + "-" + new Date().toLocaleDateString().replace(/\//g, '-');
+  const thumbnailName = videoName + " thumbnail";
+  await createVideo(prefix, videoName, thumbnailName);
+  createThumbnail(prefix, thumbnailName);
 }
 // Kiểm tra tin nhắn gửi đến /image (Esp32 gửi đến server)
 app.ws("/image", function (ws, req) {
@@ -37,18 +86,18 @@ app.ws("/image", function (ws, req) {
       startTime = performance.now();
     }
     flag = 1;
-    console.log("received: ", msg);
+    // console.log("received: ", msg);
     // Gửi dữ liệu hình ảnh đến tất cả các kết nối trong "/stream" endpoint
     streamConnections.forEach(function (client) {
       client.send(msg);
     });
     //thêm tin nhắn vào buffer
     currentTime = performance.now();
-    console.log(currentTime, startTime);
+    // console.log(currentTime, startTime);
     imagesQueue.push(msg);
     //hàm biến ảnh thành video 10s thì hợp lại thành video 1 lần
-    if (currentTime - startTime >= 10000) {
-      createVideo();
+    if (currentTime - startTime >= 60000) {
+      processVideo();
       startTime = performance.now();
     }
   });
@@ -68,6 +117,25 @@ app.ws("/stream", function (ws, req) {
   });
 });
 
+app.get("/videos", async (req, res) => {
+  try {
+    const data = await getAllVideosInfos()
+    res.json(data)
+  }
+  catch (err) {
+    console.error(err);
+  }
+})
+
+app.get("/search/:from/:to", async (req, res) => {
+  try {
+    const data = await getVideosInfosByTime(req.params.from, req.params.to);
+    res.json(data)
+  }
+  catch (err) {
+    console.error(err);
+  }
+})
 app.listen(8080, () => {
   console.log("Server listening started on port 8080");
 });

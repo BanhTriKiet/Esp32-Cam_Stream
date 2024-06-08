@@ -1,22 +1,26 @@
-.App{
-    width: 100vw;
-    height: 90vh; /* chỉ chiếm 90% độ cao, 10% cho navbar*/
-  }
-  .streamContainer {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 90vh;
-    position: relative; 
-  }
-  .content {
-    display: flex;
-    flex-direction: column;
-  }
-  
-  .fps {  
-    align-self: flex-end; /*chỉnh chữ qua bên trái góc dưới cùng */
-    margin-right: 1vw;
-    font-size: 20px;
-  }
+.App {
+  width: 100vw;
+  height: 90vh;
+  /* chỉ chiếm 90% độ cao, 10% cho navbar*/
+}
+
+.streamContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 90vh;
+  position: relative;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+}
+
+.fps {
+  align-self: flex-end;
+  /*chỉnh chữ qua bên trái góc dưới cùng */
+  margin-right: 1vw;
+  font-size: 20px;
+}

@@ -4,16 +4,16 @@
 cmake_minimum_required(VERSION 3.5)
 
 file(MAKE_DIRECTORY
-  "D:/ESP/container/esp-idf/components/bootloader/subproject"
-  "D:/CacMonHoc/Nam3/DoAn1/Esp32Cam/build/bootloader"
-  "D:/CacMonHoc/Nam3/DoAn1/Esp32Cam/build/bootloader-prefix"
-  "D:/CacMonHoc/Nam3/DoAn1/Esp32Cam/build/bootloader-prefix/tmp"
-  "D:/CacMonHoc/Nam3/DoAn1/Esp32Cam/build/bootloader-prefix/src/bootloader-stamp"
-  "D:/CacMonHoc/Nam3/DoAn1/Esp32Cam/build/bootloader-prefix/src"
-  "D:/CacMonHoc/Nam3/DoAn1/Esp32Cam/build/bootloader-prefix/src/bootloader-stamp"
+  "C:/Users/tungu/esp/v4.4.7/esp-idf/components/bootloader/subproject"
+  "D:/TKHTN/Esp32-Cam_Stream/Esp32Cam/build/bootloader"
+  "D:/TKHTN/Esp32-Cam_Stream/Esp32Cam/build/bootloader-prefix"
+  "D:/TKHTN/Esp32-Cam_Stream/Esp32Cam/build/bootloader-prefix/tmp"
+  "D:/TKHTN/Esp32-Cam_Stream/Esp32Cam/build/bootloader-prefix/src/bootloader-stamp"
+  "D:/TKHTN/Esp32-Cam_Stream/Esp32Cam/build/bootloader-prefix/src"
+  "D:/TKHTN/Esp32-Cam_Stream/Esp32Cam/build/bootloader-prefix/src/bootloader-stamp"
 )
 
 set(configSubDirs )
 foreach(subDir IN LISTS configSubDirs)
-    file(MAKE_DIRECTORY "D:/CacMonHoc/Nam3/DoAn1/Esp32Cam/build/bootloader-prefix/src/bootloader-stamp/${subDir}")
+    file(MAKE_DIRECTORY "D:/TKHTN/Esp32-Cam_Stream/Esp32Cam/build/bootloader-prefix/src/bootloader-stamp/${subDir}")
 endforeach()

@@ -1,4 +1,4 @@
-/* * Data converted from D:/CacMonHoc/Nam3/DoAn1/Esp32Cam/build/esp-idf/mbedtls/x509_crt_bundle
+/* * Data converted from D:/TKHTN/Esp32-Cam_Stream/Esp32Cam/build/esp-idf/mbedtls/x509_crt_bundle
  */
 .data
 .section .rodata.embedded
