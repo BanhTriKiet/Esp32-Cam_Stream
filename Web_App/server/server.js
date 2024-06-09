@@ -44,7 +44,7 @@ function createVideo(prefix, videoName, thumbnailName) {
           "videoName": videoName,
           "thumbnail": thumbnailSource,
           "videoSource": videoSource,
-          "time": new Date().getTime() / 60000,
+          "time": Math.floor(new Date().getTime() / 60000),
         }
         addOrUpdateVideoInfos(videoInfos)
         uploadToBucket("saved_videos", prefix, "video.mp4", videoName + ".mp4")
@@ -93,7 +93,7 @@ app.ws("/image", function (ws, req) {
     });
     //thêm tin nhắn vào buffer
     currentTime = performance.now();
-    // console.log(currentTime, startTime);
+    console.log(currentTime, startTime);
     imagesQueue.push(msg);
     //hàm biến ảnh thành video 10s thì hợp lại thành video 1 lần
     if (currentTime - startTime >= 60000) {

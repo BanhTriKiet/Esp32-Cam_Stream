@@ -24,7 +24,10 @@ export async function getAllVideosInfos() {
     }
     const videosInfos = await dynamoClient.scan(params).promise();
     // console.log(videosInfos)
-    return videosInfos.Items;
+    const data = videosInfos.Items.sort(function (a, b) {
+        return parseInt(a.time) - parseInt(b.time);
+    })
+    return data;
 }
 
 export async function getVideosInfosByTime(fromTime, toTime) {
@@ -33,13 +36,16 @@ export async function getVideosInfosByTime(fromTime, toTime) {
         FilterExpression: "#time >= :from_time AND #time <= :to_time",
         ExpressionAttributeNames: { "#time": "time" },
         ExpressionAttributeValues: {
-            ':from_time': fromTime,
-            ':to_time': toTime,
+            ':from_time': Number(fromTime),
+            ':to_time': Number(toTime),
         }
     }
     const videosInfos = await dynamoClient.scan(params, function (err, data) {
         if (err) console.log(err);
         // else console.log(data);
     }).promise();
-    return videosInfos.Items
+    const data = videosInfos.Items.sort(function (a, b) {
+        return parseInt(a.time) - parseInt(b.time);
+    })
+    return data;
 }
