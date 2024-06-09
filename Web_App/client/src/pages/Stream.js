@@ -6,7 +6,6 @@ function Stream() {
   let fpsArray = [];
   const lastRenderTimeRef = useRef(0);
   const [fpsavg, setFpsavg] = useState(0);
-  const logo = require("./received_image.jpg");
   useEffect(() => {
     const ws = new WebSocket("ws://banhtrikiet.zapto.org:8080/stream");
 

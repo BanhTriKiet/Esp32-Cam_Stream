@@ -1,13 +1,4 @@
-/* WiFi station Example
 
-   This example code is in the Public Domain (or CC0 licensed, at your option.)
-
-   Unless required by applicable law or agreed to in writing, this
-   software is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
-   CONDITIONS OF ANY KIND, either express or implied.
-*/
-//${timestamp()}
-//----------------------------------------------------------------Khai bao thu vien ----------------------------------------------------------------
 #include <stdio.h>
 #include <esp_websocket_client.h>
 
@@ -28,10 +19,12 @@
 #include "cJSON.h"
 // biến wifi
 
-#define WIFI_SSID "B15.01_2.4G"
-#define WIFI_PASS "16910301"
+// #define WIFI_SSID "B15.01_2.4G"
+// #define WIFI_PASS "16910301"
 // #define WIFI_SSID "Galaxy A32 5G"
 // #define WIFI_PASS "88888888"
+#define WIFI_SSID "bambobobu"
+#define WIFI_PASS "22101993"
 #define BOARD_ESP32CAM_AITHINKER
 //----------------------------------------------------------------Khoi tao camera --------------------------------
 #define CAM_PIN_PWDN 32
@@ -80,7 +73,7 @@ camera_config_t camera_config = {
     .ledc_channel = LEDC_CHANNEL_0,
 
     .pixel_format = PIXFORMAT_JPEG, // YUV422,GRAYSCALE,RGB565,JPEG
-    .frame_size = FRAMESIZE_QVGA,    // QQVGA-UXGA Do not use sizes above QVGA when not JPEG
+    .frame_size = FRAMESIZE_QVGA,   // QQVGA-UXGA Do not use sizes above QVGA when not JPEG
 
     .jpeg_quality = 12, // 0-63 lower number means higher quality
     .fb_count = 1       // if more than one, i2s runs in continuous mode. Use only with JPEG
@@ -181,7 +174,7 @@ static void websocket_app_start(void)
 {
 
     esp_websocket_client_config_t websocket_cfg = {};
-    websocket_cfg.uri = "ws://banhtrikiet.zapto.org:8080/image";
+    websocket_cfg.uri = "ws://192.168.1.227:8080/image";
     //  ws for url
     // websocket_cfg.uri = "ws://192.168.1.6:8080/image";
     // ws for aws

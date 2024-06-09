@@ -242,7 +242,7 @@ CONFIG_SPI_SLAVE_ISR_IN_IRAM=y
 #
 # RTCIO configuration
 #
-CONFIG_RTCIO_SUPPORT_RTC_GPIO_DESC=y
+# CONFIG_RTCIO_SUPPORT_RTC_GPIO_DESC is not set
 # end of RTCIO configuration
 
 #
@@ -340,6 +340,14 @@ CONFIG_ESP32_DPORT_DIS_INTERRUPT_LVL=5
 # end of ESP32-specific
 
 #
+# ADC-Calibration
+#
+CONFIG_ADC_CAL_EFUSE_TP_ENABLE=y
+CONFIG_ADC_CAL_EFUSE_VREF_ENABLE=y
+CONFIG_ADC_CAL_LUT_ENABLE=y
+# end of ADC-Calibration
+
+#
 # Camera configuration
 #
 CONFIG_OV7670_SUPPORT=y
@@ -367,14 +375,6 @@ CONFIG_CAMERA_CORE0=y
 # CONFIG_CAMERA_NO_AFFINITY is not set
 CONFIG_CAMERA_DMA_BUFFER_SIZE_MAX=32768
 # end of Camera configuration
-
-#
-# ADC-Calibration
-#
-CONFIG_ADC_CAL_EFUSE_TP_ENABLE=y
-CONFIG_ADC_CAL_EFUSE_VREF_ENABLE=y
-CONFIG_ADC_CAL_LUT_ENABLE=y
-# end of ADC-Calibration
 
 #
 # Common ESP-related
