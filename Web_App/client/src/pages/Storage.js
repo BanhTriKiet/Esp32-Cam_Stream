@@ -10,19 +10,20 @@ import axios from "axios";
 export default function About() {
   const navigate = useNavigate();
   const [data, setData] = useState([]);
-  const [duration, setDuration] = useState(null);
   const [startDate, setStartDate] = useState(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate()));
   const [endDate, setEndDate] = useState(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate()));
   const [startHour, setStartHour] = useState(new Date().getHours());
   const [endHour, setEndHour] = useState(new Date().getHours());
   const [startMinute, setStartMinute] = useState(new Date().getMinutes());
   const [endMinute, setEndMinute] = useState(new Date().getMinutes());
+  const [durations, setDurations] = useState({})
 
   const getData = async () => {
     const { data } = await axios.get('/videos');
     setData(data);
   }
-  const onPreviewClickHandler = (videoName, videoSource, duration) => {
+
+  const handelOnPreviewClick = (videoName, videoSource, duration) => {
     navigate("/video", {
       state: {
         videoName: videoName,
@@ -30,7 +31,8 @@ export default function About() {
         duration: duration,
       }
     });
-  }
+  };
+
   const handleOnSearch = async () => {
     const fromDate = startDate.toLocaleDateString().split("/");
     const toDate = endDate.toLocaleDateString().split("/");
@@ -38,10 +40,18 @@ export default function About() {
     const toTime = (new Date(toDate[2], toDate[0] - 1, toDate[1], endHour, endMinute).getTime()) / 60000;
     const { data } = await axios.get(`/search/${fromTime}/${toTime}`)
     setData(data);
-  }
+  };
+
   const handelOnCancel = async () => {
     getData();
-  }
+  };
+
+  const handleOnDurationChange = (videoSource, duration) => {
+    setDurations((prevDurations) => ({
+      ...prevDurations,
+      [videoSource]: duration,
+    }));
+  };
 
   useEffect(() => {
     getData();
@@ -70,15 +80,18 @@ export default function About() {
       <button onClick={handelOnCancel}>Cancel</button>
       <div>
         {
-          data.map((item, i) => (
-            < button key={i}
-              onClick={() => onPreviewClickHandler(item.videoName, item.videoSource, duration)}
-            >
-              <img src={item.thumbnail} />
-              <VideoDuration videoUrl={item.videoSource} videoDuration={(data) => { setDuration(data) }} />
-              <p>{item.videoName}</p>
-            </button>
-          ))
+          data.map((item, i) => {
+            return (
+              < button key={i}
+                onClick={() => handelOnPreviewClick(item.videoName, item.videoSource, durations[item.videoSource])}
+              >
+
+                <img src={item.thumbnail} />
+                <VideoDuration videoUrl={item.videoSource} videoDuration={(duration) => handleOnDurationChange(item.videoSource, duration)} />
+                <p>{item.videoName}</p>
+              </button>
+            )
+          })
         }
       </div>
     </div >

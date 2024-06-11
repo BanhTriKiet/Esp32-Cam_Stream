@@ -10,14 +10,18 @@ const Video = () => {
     const [playing, setPlaying] = useState(false);
     const [played, setPlayed] = useState(0);
     const playerRef = useRef(null);
-    const handleProgress = (state) => {
+    const handleOnProgress = (state) => {
         setPlayed(state.playedSeconds);
     };
-    const handleSeekChange = (e) => {
+    const handleOnSeekChange = (e) => {
         const newTime = parseFloat(e.target.value);
         setPlayed(newTime);
         playerRef.current.seekTo(newTime);
     };
+    const handleOnEnded = () => {
+        setPlaying(false);
+        setPlayed(0);
+    }
     return (
         <div className="videoContainer">
             <ReactPlayer ref={playerRef}
@@ -25,7 +29,7 @@ const Video = () => {
                 url={videoSource}
                 playing={playing}
                 controls={false}
-                onProgress={handleProgress} />
+                onProgress={handleOnProgress} />
             <div className="progressBarContainer">
                 <input
                     type="range"
@@ -33,7 +37,8 @@ const Video = () => {
                     max={videoDuration}
                     step="any"
                     value={played}
-                    onChange={handleSeekChange}
+                    onChange={handleOnSeekChange}
+                    onEnded={handleOnEnded}
                     style={{ width: '400px' }}
                 />
                 <p>{Math.floor(played / 60)}:{String(Math.round(played % 60)).padStart(2, '0')}/ {Math.floor(videoDuration / 60)}:{String(videoDuration % 60).padStart(2, '0')}s</p>
