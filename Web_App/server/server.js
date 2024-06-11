@@ -3,10 +3,10 @@ import express from "express";
 import expressWs from "express-ws";
 import ffmpeg from "fluent-ffmpeg";
 import ffmpegStatic from "ffmpeg-static";
+import cors from "cors";
+
 // import ffprobe  from 'ffprobe-static';
 import ffmpegPath from "@ffmpeg-installer/ffmpeg";
-import { resolve } from "path";
-import { rejects } from "assert";
 import { uploadToBucket } from "./s3.js";
 import {
   addOrUpdateVideoInfos,
@@ -19,6 +19,7 @@ dotenv.config();
 ffmpeg.setFfmpegPath(ffmpegStatic);
 //ffmpeg.setFfprobePath(ffprobe.path);
 const app = express();
+app.use(cors());
 expressWs(app);
 // console.log(ffmpegPath.path);
 let imagesQueue = []; // mảnh lưu trữ các buffer của hình ảnh
@@ -60,7 +61,7 @@ function createVideo(prefix, videoName, thumbnailName) {
           videoName: videoName,
           thumbnail: thumbnailSource,
           videoSource: videoSource,
-          time: Math.floor(new Date().getTime() / 60000),
+          time: Math.round(new Date().getTime() / 60000),
         };
         addOrUpdateVideoInfos(videoInfos);
         uploadToBucket("saved_videos", prefix, "video.mp4", videoName + ".mp4");
@@ -121,10 +122,10 @@ app.ws("/image", function (ws, req) {
     });
     //thêm tin nhắn vào buffer
     currentTime = performance.now();
-    // console.log(currentTime, startTime);
+    console.log(currentTime, startTime);
     imagesQueue.push(msg);
     //hàm biến ảnh thành video 10s thì hợp lại thành video 1 lần
-    if (currentTime - startTime >= 60000) {
+    if (currentTime - startTime >= 300000) {
       processVideo();
       startTime = performance.now();
     }

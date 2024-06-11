@@ -99,10 +99,41 @@
   background-color: #777;
   cursor: pointer;
 }
-/* videopage */
+
 .videoShow {
   display: flex;
   justify-content: center;
   align-items: center;
   flex-direction: column;
+}
+.video {
+  width: 500px;
+  height: 300px;
+}
+/* video page */
+.playButton {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 60px;
+  height: 40px;
+  background-color: #333;
+  color: white;
+}
+.playButton:hover {
+  background-color: #777;
+  cursor: pointer;
+}
+.progressBarContainer {
+  display: flex;
+  flex-direction: row;
+}
+.playContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 90vh;
+  position: relative;
+  gap: 10px;
 }
