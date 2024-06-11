@@ -17,8 +17,10 @@ import dotenv from "dotenv";
 
 dotenv.config();
 ffmpeg.setFfmpegPath(ffmpegStatic);
+//ffmpeg.setFfprobePath(ffprobe.path);
 const app = express();
 expressWs(app);
+// console.log(ffmpegPath.path);
 let imagesQueue = []; // mảnh lưu trữ các buffer của hình ảnh
 const streamConnections = []; // Mảng lưu trữ các kết nối trong endpoint "/stream"
 let flag = 0;
@@ -58,7 +60,7 @@ function createVideo(prefix, videoName, thumbnailName) {
           videoName: videoName,
           thumbnail: thumbnailSource,
           videoSource: videoSource,
-          time: new Date().getTime() / 60000,
+          time: Math.floor(new Date().getTime() / 60000),
         };
         addOrUpdateVideoInfos(videoInfos);
         uploadToBucket("saved_videos", prefix, "video.mp4", videoName + ".mp4");
@@ -112,6 +114,7 @@ app.ws("/image", function (ws, req) {
       startTime = performance.now();
     }
     flag = 1;
+    // console.log("received: ", msg);
     // Gửi dữ liệu hình ảnh đến tất cả các kết nối trong "/stream" endpoint
     streamConnections.forEach(function (client) {
       client.send(msg);

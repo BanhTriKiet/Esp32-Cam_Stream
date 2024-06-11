@@ -3,7 +3,7 @@
   height: 90vh;
   /* chỉ chiếm 90% độ cao, 10% cho navbar*/
 }
-
+/* stream page */
 .streamContainer {
   display: flex;
   flex-direction: column;
@@ -23,4 +23,86 @@
   /*chỉnh chữ qua bên trái góc dưới cùng */
   margin-right: 1vw;
   font-size: 20px;
+}
+/* Stogage page */
+.searchContainer {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  width: 95vw;
+}
+.searchBox {
+  margin: 1vw;
+  font-size: 20px;
+}
+.inputBox {
+  font-size: 20px;
+  width: 12vw;
+}
+.searchButton {
+  margin-top: 2vw;
+  height: 3vw;
+  width: 7vw;
+  /* border-radius: 50%; */
+  justify-content: center;
+  align-items: center;
+  font-size: 1vw;
+  background-color: #333;
+  color: white;
+  border-radius: 5px;
+  overflow: hidden;
+}
+.searchIcon {
+  height: 20px;
+  width: 20px;
+  fill: white;
+}
+.searchButton:hover {
+  background-color: #777;
+  cursor: pointer;
+}
+.listAllButton {
+  margin-top: 2vw;
+  height: 3.5vw;
+  width: 10vw;
+  /* border-radius: 50%; */
+  justify-content: center;
+  align-items: center;
+  font-size: 20px;
+  background-color: #333;
+  color: white;
+  border-radius: 5px;
+  overflow: hidden;
+  margin-left: 5vw;
+}
+.listAllButton:hover {
+  background-color: #777;
+  cursor: pointer;
+}
+.seeIcon {
+  height: 20px;
+  width: 25px;
+  fill: white;
+  margin-right: 1vw;
+}
+.videoContainer {
+  width: 100vw;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.videoItem {
+  margin: 1vw;
+}
+.videoItem:hover {
+  background-color: #777;
+  cursor: pointer;
+}
+/* videopage */
+.videoShow {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
 }
