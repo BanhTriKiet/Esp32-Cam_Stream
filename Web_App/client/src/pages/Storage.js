@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef, } from "react";
 import { useNavigate } from 'react-router-dom';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import VideoDuration from "../component/VideoDuration";
 // import Box from '@mui/material/Box';
 import "./style.css";
 import axios from "axios";
@@ -9,6 +10,7 @@ import axios from "axios";
 export default function About() {
   const navigate = useNavigate();
   const [data, setData] = useState([]);
+  const [duration, setDuration] = useState(null);
   const [startDate, setStartDate] = useState(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate()));
   const [endDate, setEndDate] = useState(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate()));
   const [startHour, setStartHour] = useState(new Date().getHours());
@@ -20,11 +22,12 @@ export default function About() {
     const { data } = await axios.get('/videos');
     setData(data);
   }
-  const onPreviewClickHandler = (videoName, videoSource) => {
+  const onPreviewClickHandler = (videoName, videoSource, duration) => {
     navigate("/video", {
       state: {
         videoName: videoName,
         videoSource: videoSource,
+        duration: duration,
       }
     });
   }
@@ -69,9 +72,10 @@ export default function About() {
         {
           data.map((item, i) => (
             < button key={i}
-              onClick={() => onPreviewClickHandler(item.videoName, item.videoSource)}
+              onClick={() => onPreviewClickHandler(item.videoName, item.videoSource, duration)}
             >
               <img src={item.thumbnail} />
+              <VideoDuration videoUrl={item.videoSource} videoDuration={(data) => { setDuration(data) }} />
               <p>{item.videoName}</p>
             </button>
           ))

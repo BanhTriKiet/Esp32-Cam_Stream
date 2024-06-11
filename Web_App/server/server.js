@@ -5,8 +5,6 @@ import ffmpeg from "fluent-ffmpeg";
 import ffmpegStatic from "ffmpeg-static";
 // import ffprobe  from 'ffprobe-static';
 import ffmpegPath from "@ffmpeg-installer/ffmpeg";
-import { resolve } from "path";
-import { rejects } from "assert";
 import { uploadToBucket } from "./s3.js"
 import { addOrUpdateVideoInfos, getAllVideosInfos, getVideosInfosByTime } from "./dynamo.js"
 import dotenv from 'dotenv'
@@ -44,7 +42,7 @@ function createVideo(prefix, videoName, thumbnailName) {
           "videoName": videoName,
           "thumbnail": thumbnailSource,
           "videoSource": videoSource,
-          "time": Math.floor(new Date().getTime() / 60000),
+          "time": Math.round(new Date().getTime() / 60000),
         }
         addOrUpdateVideoInfos(videoInfos)
         uploadToBucket("saved_videos", prefix, "video.mp4", videoName + ".mp4")
